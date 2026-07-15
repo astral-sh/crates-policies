@@ -19,6 +19,10 @@ Apply the policies after reviewing the output:
 CARGO_REGISTRY_TOKEN=... ./apply.py --confirm
 ```
 
+The `Apply crates.io policies` workflow can also be run manually from GitHub Actions.
+It reads `CARGO_REGISTRY_TOKEN` from the `production` environment and performs a dry
+run unless `confirm` is selected.
+
 The utility checks every crate before making changes. It removes stale or duplicate
 GitHub trusted-publisher configurations, adds the declared configuration when missing,
 and reconciles `trustpub_only`. It does not publish new crates; an initial publish must
