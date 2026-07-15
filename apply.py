@@ -148,7 +148,7 @@ def get_crate_metadata(client: httpx.Client, crate: str) -> dict[str, Any] | Non
     response = client.get(f"{CRATES_IO_API}/crates/{crate}")
     if response.status_code == 404:
         return None
-    response.raise_for_status()
+    raise_for_status(response, crate, "get crate metadata")
     payload = response.json().get("crate")
     if not isinstance(payload, dict):
         raise ValueError(f"{crate}: unexpected crates.io metadata response")
@@ -160,13 +160,21 @@ def list_trusted_publishers(client: httpx.Client, crate: str) -> list[dict[str, 
         f"{CRATES_IO_API}/trusted_publishing/github_configs",
         params={"crate": crate},
     )
-    response.raise_for_status()
+    raise_for_status(response, crate, "list trusted publishers")
     configs = response.json().get("github_configs")
     if not isinstance(configs, list) or not all(
         isinstance(config, dict) for config in configs
     ):
         raise ValueError(f"{crate}: unexpected trusted publisher response")
     return configs
+
+
+def raise_for_status(response: httpx.Response, crate: str, action: str) -> None:
+    try:
+        response.raise_for_status()
+    except httpx.HTTPStatusError:
+        print(f"{crate}: failed to {action}", file=sys.stderr, flush=True)
+        raise
 
 
 def plan_crate(
@@ -267,7 +275,7 @@ def apply_plan(client: httpx.Client, plan: Plan) -> None:
         response = client.delete(
             f"{CRATES_IO_API}/trusted_publishing/github_configs/{config_id}"
         )
-        response.raise_for_status()
+        raise_for_status(response, plan.crate, f"delete trusted publisher {config_id}")
 
     if plan.add_publisher:
         response = client.post(
@@ -282,14 +290,14 @@ def apply_plan(client: httpx.Client, plan: Plan) -> None:
                 }
             },
         )
-        response.raise_for_status()
+        raise_for_status(response, plan.crate, "add trusted publisher")
 
     if plan.set_trustpub_only:
         response = client.patch(
             f"{CRATES_IO_API}/crates/{plan.crate}",
             json={"crate": {"trustpub_only": plan.policy.trustpub_only}},
         )
-        response.raise_for_status()
+        raise_for_status(response, plan.crate, "update trustpub_only")
 
 
 def main() -> int:
@@ -319,6 +327,10 @@ def main() -> int:
             plans = []
             for policy in policies:
                 for crate in policy.crates:
+                    print(
+                        f"Checking {policy.repository_owner}/{policy.repository_name}: {crate}",
+                        flush=True,
+                    )
                     metadata = get_crate_metadata(public_client, crate)
                     configs = (
                         list_trusted_publishers(auth_client, crate)
@@ -343,7 +355,10 @@ def main() -> int:
         return 1
     except httpx.HTTPStatusError as exc:
         print(f"error {exc.response.status_code}: {exc.response.text}", file=sys.stderr)
-        if exc.response.status_code in {401, 403}:
+        if exc.response.status_code in {401, 403} or (
+            exc.response.status_code == 400
+            and "not an owner of this crate" in exc.response.text
+        ):
             print(
                 "hint: check that the token has the `publish-new` and "
                 "`trusted-publishing` scopes and "
