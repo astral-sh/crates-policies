@@ -1,0 +1,16 @@
+{
+  "repository_owner": "astral-sh",
+  "repository_name": "ruff",
+  "workflow_filename": "release.yml",
+  "environment": "release",
+  "trustpub_only": true,
+  "crates": [
+    "ty_combine",
+    "ty_module_resolver",
+    "ty_python_core",
+    "ty_python_semantic",
+    "ty_site_packages",
+    "ty_static",
+    "ty_vendored"
+  ]
+}
