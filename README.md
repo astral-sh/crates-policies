@@ -10,6 +10,16 @@ policy.
 The Ty component crates in `trusted-publishing/ty.json` currently publish from the
 Ruff release workflow, so their policy intentionally references `astral-sh/ruff`.
 
+Check that every publishable crate in a Cargo workspace is configured:
+
+```console
+./check.py /path/to/workspace
+```
+
+The checker infers the GitHub repository from `workspace.package.repository` and
+reports any new crates that need to be bootstrapped. Use `--repository OWNER/NAME` to
+override the inferred repository.
+
 Run a read-only dry run with a crates.io token that has the `trusted-publishing` scope:
 
 ```console
