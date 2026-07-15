@@ -23,3 +23,8 @@ The utility checks every crate before making changes. It removes stale or duplic
 GitHub trusted-publisher configurations, adds the declared configuration when missing,
 and reconciles `trustpub_only`. It does not publish new crates; an initial publish must
 happen before trusted publishing can be configured.
+
+## License
+
+Licensed under either [Apache License, Version 2.0](LICENSE-APACHE) or
+[MIT license](LICENSE-MIT) at your option.
