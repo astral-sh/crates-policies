@@ -20,7 +20,8 @@ The checker infers the GitHub repository from `workspace.package.repository` and
 reports any new crates that need to be bootstrapped. Use `--repository OWNER/NAME` to
 override the inferred repository.
 
-Run a read-only dry run with a crates.io token that has the `trusted-publishing` scope:
+Run a read-only dry run with a crates.io token that has the `publish-new` and
+`trusted-publishing` scopes:
 
 ```console
 CARGO_REGISTRY_TOKEN=... ./apply.py
@@ -38,8 +39,8 @@ run unless `confirm` is selected.
 
 The utility checks every crate before making changes. It removes stale or duplicate
 GitHub trusted-publisher configurations, adds the declared configuration when missing,
-and reconciles `trustpub_only`. It does not publish new crates; an initial publish must
-happen before trusted publishing can be configured.
+and reconciles `trustpub_only`. For a new crate, it publishes a placeholder release
+before configuring trusted publishing.
 
 ## License
 
