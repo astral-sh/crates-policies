@@ -7,6 +7,9 @@ GitHub repository, workflow, environment, whether to require trusted publishing 
 versions, and the crates that use that configuration. A crate may appear in only one
 policy.
 
+The Ty component crates in `trusted-publishing/ty.json` currently publish from the
+Ruff release workflow, so their policy intentionally references `astral-sh/ruff`.
+
 Run a read-only dry run with a crates.io token that has the `trusted-publishing` scope:
 
 ```console
