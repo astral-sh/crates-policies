@@ -1,0 +1,8 @@
+{
+  "repository_owner": "astral-sh",
+  "repository_name": "char_str",
+  "workflow_filename": "release.yml",
+  "environment": "release",
+  "trustpub_only": true,
+  "crates": ["char_str"]
+}
