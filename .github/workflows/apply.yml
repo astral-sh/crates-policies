@@ -18,6 +18,7 @@ concurrency:
 
 jobs:
   apply:
+    name: Apply
     runs-on: ubuntu-latest
     environment: production
     steps:
