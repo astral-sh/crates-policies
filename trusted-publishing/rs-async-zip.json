@@ -1,0 +1,8 @@
+{
+  "repository_owner": "astral-sh",
+  "repository_name": "rs-async-zip",
+  "workflow_filename": "publish.yml",
+  "environment": "crates-io",
+  "trustpub_only": true,
+  "crates": ["astral_async_zip"]
+}

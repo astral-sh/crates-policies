@@ -13,9 +13,9 @@ Check that every publishable crate in a Cargo workspace is configured:
 ./check.py /path/to/workspace
 ```
 
-The checker infers the GitHub repository from `workspace.package.repository` and
-reports any new crates that need to be bootstrapped. Use `--repository OWNER/NAME` to
-override the inferred repository.
+The checker infers the GitHub repository from `workspace.package.repository` or
+`package.repository` and reports any new crates that need to be bootstrapped. Use
+`--repository OWNER/NAME` to override the inferred repository.
 
 Run the [`Apply` workflow](https://github.com/astral-sh/crates-policies/actions/workflows/apply.yml)
 to apply the policies. It reads `CARGO_REGISTRY_TOKEN` from the `production`
