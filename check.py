@@ -22,8 +22,10 @@ POLICIES_DIR = pathlib.Path(__file__).resolve().parent / "trusted-publishing"
 def repository_from_manifest(manifest_path: pathlib.Path) -> str:
     manifest = tomllib.loads(manifest_path.read_text())
     repository = manifest.get("workspace", {}).get("package", {}).get("repository")
+    if repository is None:
+        repository = manifest.get("package", {}).get("repository")
     if not isinstance(repository, str):
-        raise RuntimeError("`workspace.package.repository` is missing from Cargo.toml")
+        raise RuntimeError("package repository is missing from Cargo.toml")
 
     parsed = urllib.parse.urlparse(repository)
     if parsed.netloc != "github.com":
