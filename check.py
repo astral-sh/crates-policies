@@ -120,7 +120,7 @@ def main() -> int:
             file=sys.stderr,
         )
         print(
-            "Bootstrap the new crates, then add them to astral-sh/crates-policies.",
+            "Register the new crates in astral-sh/crates-policies.",
             file=sys.stderr,
         )
         return 1
