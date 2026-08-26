@@ -5,7 +5,7 @@
 #
 # [tool.uv]
 # exclude-newer = "P7D"
-# no-binary = true
+# no-build = true
 # ///
 
 """Apply the crates.io policies in this repository."""

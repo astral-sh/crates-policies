@@ -5,7 +5,7 @@
 #
 # [tool.uv]
 # exclude-newer = "P7D"
-# no-binary = true
+# no-build = true
 # ///
 
 """Check that a Cargo workspace's publishable crates are configured."""
