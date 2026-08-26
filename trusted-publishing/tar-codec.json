@@ -1,0 +1,12 @@
+{
+    "repository_owner": "astral-sh",
+    "repository_name": "tar-codec",
+    "workflow_filename": "publish.yml",
+    "environment": "crates.io",
+    "trustpub_only": true,
+    "crates": [
+        "tar-framing",
+        "archive-trait",
+        "tar-codec"
+    ]
+}
