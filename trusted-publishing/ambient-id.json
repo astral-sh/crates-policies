@@ -1,0 +1,10 @@
+{
+    "repository_owner": "astral-sh",
+    "repository_name": "ambient-id",
+    "workflow_filename": "release.yml",
+    "environment": "release",
+    "trustpub_only": true,
+    "crates": [
+        "ambient-id"
+    ]
+}
