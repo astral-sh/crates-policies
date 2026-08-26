@@ -2,6 +2,10 @@
 # /// script
 # requires-python = ">=3.13"
 # dependencies = ["httpx"]
+#
+# [tool.uv]
+# exclude-newer = "P7D"
+# no-binary = true
 # ///
 
 """Apply the crates.io policies in this repository."""
