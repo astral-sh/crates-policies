@@ -5,8 +5,8 @@
     "environment": "release",
     "trustpub_only": true,
     "crates": [
-        "tar-framing",
         "archive-trait",
-        "tar-codec"
+        "tar-codec",
+        "tar-framing"
     ]
 }
