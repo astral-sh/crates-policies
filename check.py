@@ -2,6 +2,10 @@
 # /// script
 # requires-python = ">=3.13"
 # dependencies = []
+#
+# [tool.uv]
+# exclude-newer = "P7D"
+# no-build = true
 # ///
 
 """Check that a Cargo workspace's publishable crates are configured."""
