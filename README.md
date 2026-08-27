@@ -24,7 +24,7 @@ To register new crates:
    with `confirm` enabled to bootstrap the crates.
 3. Re-run the workspace check or release preparation.
 
-The `Apply` workflow reads `CARGO_REGISTRY_TOKEN` from the `production` environment,
+The `Apply` workflow reads `CARGO_REGISTRY_TOKEN` from the `release` environment,
 which requires the `publish-new` and `trusted-publishing` scopes, and performs a dry run
 unless `confirm` is selected.
 
