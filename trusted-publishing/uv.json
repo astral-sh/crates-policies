@@ -62,6 +62,7 @@
     "uv-state",
     "uv-static",
     "uv-test",
+    "uv-threads",
     "uv-toml",
     "uv-tool",
     "uv-torch",
