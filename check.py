@@ -96,7 +96,9 @@ def publishable_crates(manifest_path: pathlib.Path) -> set[str]:
 
 
 def crate_exists(crate: str) -> bool:
-    # Cargo's registry index stores crate metadata at name-derived paths:
+    # Cargo's registry index uses lowercase names. One- and two-character names
+    # use `1/{name}` and `2/{name}`; three-character names use `3/{first}/{name}`.
+    # Longer names use `{first-two}/{next-two}/{name}`, e.g., `se/rd/serde`.
     # https://doc.rust-lang.org/cargo/reference/registry-index.html#index-files
     name = crate.lower()
     if len(name) <= 2:
