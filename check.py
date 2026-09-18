@@ -13,10 +13,13 @@
 from __future__ import annotations
 
 import argparse
+import datetime
+import email.utils
 import json
 import pathlib
 import subprocess
 import sys
+import time
 import tomllib
 import urllib.error
 import urllib.parse
@@ -25,6 +28,25 @@ import urllib.request
 CRATES_IO_INDEX = "https://index.crates.io"
 USER_AGENT = "astral-sh-crates-policies (github.com/astral-sh/crates-policies)"
 POLICIES_DIR = pathlib.Path(__file__).resolve().parent / "trusted-publishing"
+MAX_LOOKUP_ATTEMPTS = 4
+MAX_RETRY_DELAY = 60
+RETRYABLE_HTTP_STATUSES = {403, 408, 429, 500, 502, 503, 504}
+
+
+def retry_after_seconds(value: str | None) -> float | None:
+    if value is None:
+        return None
+    try:
+        return max(0, int(value))
+    except ValueError:
+        pass
+    try:
+        retry_at = email.utils.parsedate_to_datetime(value)
+        if retry_at.tzinfo is None:
+            retry_at = retry_at.replace(tzinfo=datetime.UTC)
+        return max(0, retry_at.timestamp() - time.time())
+    except (ValueError, TypeError, OverflowError):
+        return None
 
 
 def repository_from_manifest(manifest_path: pathlib.Path) -> str:
@@ -113,21 +135,57 @@ def crate_exists(crate: str) -> bool:
         headers={"User-Agent": USER_AGENT},
         method="HEAD",
     )
-    try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            if response.status != 200:
-                raise RuntimeError(
-                    f"{crate}: crates.io lookup failed: HTTP {response.status}"
-                )
-    except urllib.error.HTTPError as exc:
-        if exc.code == 404:
-            return False
-        raise RuntimeError(
-            f"{crate}: crates.io lookup failed: HTTP {exc.code}"
-        ) from exc
-    except OSError as exc:
-        raise RuntimeError(f"{crate}: crates.io lookup failed: {exc}") from exc
-    return True
+    for attempt in range(MAX_LOOKUP_ATTEMPTS):
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                if response.status != 200:
+                    raise RuntimeError(
+                        f"{crate}: crates.io lookup failed: HTTP {response.status}"
+                    )
+            return True
+        except OSError as exc:
+            delay = 2**attempt
+            retryable = True
+            if isinstance(exc, urllib.error.HTTPError):
+                with exc:
+                    if exc.code == 404:
+                        return False
+                    retryable = exc.code in RETRYABLE_HTTP_STATUSES
+                    details = [f"HTTP {exc.code}"]
+                    for header in (
+                        "server",
+                        "retry-after",
+                        "x-cache",
+                        "x-served-by",
+                        "x-request-id",
+                        "x-amz-request-id",
+                        "x-amz-cf-id",
+                    ):
+                        if value := exc.headers.get(header):
+                            details.append(f"{header}={value!r}")
+                    detail = "; ".join(details)
+                    retry_after = retry_after_seconds(exc.headers.get("Retry-After"))
+                    if retry_after is not None:
+                        delay = max(delay, retry_after)
+            else:
+                detail = str(exc)
+
+            message = f"{crate}: crates.io lookup failed: {detail}"
+            # A long Retry-After must not turn into an earlier retry.
+            if (
+                not retryable
+                or attempt + 1 == MAX_LOOKUP_ATTEMPTS
+                or delay > MAX_RETRY_DELAY
+            ):
+                raise RuntimeError(message) from exc
+            print(
+                f"warning: {message}; retrying in {delay:g}s "
+                f"(attempt {attempt + 2}/{MAX_LOOKUP_ATTEMPTS})",
+                file=sys.stderr,
+            )
+            time.sleep(delay)
+
+    raise AssertionError("crate lookup exhausted without a result")
 
 
 def main() -> int:
