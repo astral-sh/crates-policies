@@ -19,6 +19,10 @@ The checker infers the GitHub repository from `workspace.package.repository` or
 index. Use `--repository OWNER/NAME` to override the inferred repository. Registry lookup
 failures also fail the check.
 
+This is a best-effort readiness check. Crate existence is public, but inspecting trusted
+publisher configuration requires a crates.io token. A successful check does not guarantee
+that `Apply` completed or that trusted publishing is configured correctly.
+
 To register new crates:
 
 1. Add the crate names to the appropriate `trusted-publishing/*.json` policy in sorted order.
