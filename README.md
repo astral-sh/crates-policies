@@ -21,12 +21,12 @@ To register new crates:
 
 1. Add the crate names to the appropriate `trusted-publishing/*.json` policy in sorted order.
 2. Run the [`Apply` workflow](https://github.com/astral-sh/crates-policies/actions/workflows/apply.yml)
-   with `confirm` enabled to bootstrap the crates.
+   to bootstrap the crates.
 3. Re-run the workspace check or release preparation.
 
 The `Apply` workflow reads `CARGO_REGISTRY_TOKEN` from the `production` environment,
-which requires the `publish-new` and `trusted-publishing` scopes, and performs a dry run
-unless `confirm` is selected.
+which requires the `publish-new` and `trusted-publishing` scopes. It applies changes by
+default; select `Dry-run` to preview them.
 
 The utility checks every crate before making changes. It removes stale or duplicate
 GitHub trusted-publisher configurations, adds the declared configuration when missing,
