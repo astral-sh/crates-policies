@@ -8,7 +8,7 @@
 # no-build = true
 # ///
 
-"""Check that a Cargo workspace's publishable crates are configured."""
+"""Check that a Cargo workspace's publishable crates are configured and seeded."""
 
 from __future__ import annotations
 
@@ -18,8 +18,12 @@ import pathlib
 import subprocess
 import sys
 import tomllib
+import urllib.error
 import urllib.parse
+import urllib.request
 
+CRATES_IO_INDEX = "https://index.crates.io"
+USER_AGENT = "astral-sh-crates-policies (github.com/astral-sh/crates-policies)"
 POLICIES_DIR = pathlib.Path(__file__).resolve().parent / "trusted-publishing"
 
 
@@ -91,6 +95,41 @@ def publishable_crates(manifest_path: pathlib.Path) -> set[str]:
     }
 
 
+def crate_exists(crate: str) -> bool:
+    # Cargo's registry index uses lowercase names. One- and two-character names
+    # use `1/{name}` and `2/{name}`; three-character names use `3/{first}/{name}`.
+    # Longer names use `{first-two}/{next-two}/{name}`, e.g., `se/rd/serde`.
+    # https://doc.rust-lang.org/cargo/reference/registry-index.html#index-files
+    name = crate.lower()
+    if len(name) <= 2:
+        prefix = str(len(name))
+    elif len(name) == 3:
+        prefix = f"3/{name[0]}"
+    else:
+        prefix = f"{name[:2]}/{name[2:4]}"
+
+    request = urllib.request.Request(
+        f"{CRATES_IO_INDEX}/{prefix}/{name}",
+        headers={"User-Agent": USER_AGENT},
+        method="HEAD",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            if response.status != 200:
+                raise RuntimeError(
+                    f"{crate}: crates.io lookup failed: HTTP {response.status}"
+                )
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            return False
+        raise RuntimeError(
+            f"{crate}: crates.io lookup failed: HTTP {exc.code}"
+        ) from exc
+    except OSError as exc:
+        raise RuntimeError(f"{crate}: crates.io lookup failed: {exc}") from exc
+    return True
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -129,7 +168,27 @@ def main() -> int:
         )
         return 1
 
-    print(f"All {len(publishable)} publishable crates in {repository} are configured.")
+    try:
+        unseeded = [crate for crate in sorted(publishable) if not crate_exists(crate)]
+    except RuntimeError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+
+    if unseeded:
+        print(
+            f"Crates missing from crates.io: {', '.join(unseeded)}",
+            file=sys.stderr,
+        )
+        print(
+            "Run the Apply workflow in astral-sh/crates-policies with confirm enabled.",
+            file=sys.stderr,
+        )
+        return 1
+
+    print(
+        f"All {len(publishable)} publishable crates in {repository} are configured "
+        "and exist on crates.io."
+    )
     return 0
 
 
