@@ -96,6 +96,8 @@ def publishable_crates(manifest_path: pathlib.Path) -> set[str]:
 
 
 def crate_exists(crate: str) -> bool:
+    # Cargo's registry index stores crate metadata at name-derived paths:
+    # https://doc.rust-lang.org/cargo/reference/registry-index.html#index-files
     name = crate.lower()
     if len(name) <= 2:
         prefix = str(len(name))
