@@ -7,15 +7,17 @@ GitHub repository, workflow, environment, whether to require trusted publishing 
 versions, and the crates that use that configuration. A crate may appear in only one
 policy.
 
-Check that every publishable crate in a Cargo workspace is configured:
+Check that every publishable crate in a Cargo workspace is configured and exists on
+crates.io:
 
 ```console
 ./check.py /path/to/workspace
 ```
 
 The checker infers the GitHub repository from `workspace.package.repository` or
-`package.repository` and reports any new crates that need to be bootstrapped. Use
-`--repository OWNER/NAME` to override the inferred repository.
+`package.repository` and reports crates missing from the policy or the crates.io sparse
+index. Use `--repository OWNER/NAME` to override the inferred repository. Registry lookup
+failures also fail the check.
 
 To register new crates:
 
