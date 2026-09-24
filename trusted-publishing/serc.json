@@ -1,0 +1,11 @@
+{
+  "repository_owner": "astral-sh",
+  "repository_name": "serc",
+  "workflow_filename": "release.yml",
+  "environment": "release",
+  "trustpub_only": true,
+  "crates": [
+    "serc",
+    "serc-cli"
+  ]
+}
