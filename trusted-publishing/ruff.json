@@ -8,7 +8,7 @@
     "ruff",
     "ruff_annotate_snippets",
     "ruff_cache",
-    "ruff_cli",
+    "ruff_command_line",
     "ruff_db",
     "ruff_diagnostics",
     "ruff_formatter",
