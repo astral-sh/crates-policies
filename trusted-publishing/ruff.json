@@ -35,6 +35,8 @@
     "ruff_server",
     "ruff_source_file",
     "ruff_text_size",
+    "ruff_unicode_names2",
+    "ruff_unicode_names2_generator",
     "ruff_wasm",
     "ruff_workspace"
   ]
