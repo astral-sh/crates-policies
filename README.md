@@ -17,7 +17,7 @@ crates.io:
 The checker infers the GitHub repository from `workspace.package.repository` or
 `package.repository` and reports crates missing from the policy or the crates.io sparse
 index. Use `--repository OWNER/NAME` to override the inferred repository. Registry lookup
-failures also fail the check.
+failures also fail the check after bounded retries for transient errors.
 
 This is a best-effort readiness check. Crate existence is public, but inspecting trusted
 publisher configuration requires a crates.io token. A successful check does not guarantee
