@@ -26,13 +26,18 @@ that `Apply` completed or that trusted publishing is configured correctly.
 To register new crates:
 
 1. Add the crate names to the appropriate `trusted-publishing/*.json` policy in sorted order.
-2. Run the [`Apply` workflow](https://github.com/astral-sh/crates-policies/actions/workflows/apply.yml)
+2. Run the [`Apply` workflow](https://github.com/astral-sh/crates-policies/actions/workflows/release.yml)
    to bootstrap the crates.
 3. Re-run the workspace check or release preparation.
 
-The `Apply` workflow reads `CARGO_REGISTRY_TOKEN` from the `production` environment,
+The `Apply` workflow reads `CARGO_REGISTRY_TOKEN` from the `release` environment,
 which requires the `publish-new` and `trusted-publishing` scopes. It applies changes by
 default; select `Dry-run` to preview them.
+
+The `release-gate` job requires approval from another team member, including for dry
+runs. The `release` environment uses the `release-environment-gate` app to verify
+that approval before allowing access to the token. Re-run failed jobs to retry an
+unsuccessful apply without repeating the successful approval job.
 
 The utility checks every crate before making changes. It removes stale or duplicate
 GitHub trusted-publisher configurations, adds the declared configuration when missing,
