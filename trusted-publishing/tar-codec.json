@@ -1,6 +1,6 @@
 {
     "repository_owner": "astral-sh",
-    "repository_name": "tar-codec",
+    "repository_name": "astral-codec",
     "workflow_filename": "release.yml",
     "environment": "release",
     "trustpub_only": true,
