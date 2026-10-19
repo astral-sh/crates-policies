@@ -7,6 +7,8 @@
     "crates": [
         "archive-trait",
         "tar-codec",
-        "tar-framing"
+        "tar-framing",
+        "zip-codec",
+        "zip-framing"
     ]
 }
