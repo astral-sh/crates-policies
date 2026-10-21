@@ -6,6 +6,8 @@
 # [tool.uv]
 # exclude-newer = "P7D"
 # no-build = true
+# require-build-hashes = true
+# preview-features = ["build-dependency-hashes"]
 # ///
 
 """Apply the crates.io policies in this repository."""
