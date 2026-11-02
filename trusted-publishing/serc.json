@@ -1,5 +1,5 @@
 {
-  "repository_owner": "astral-sh",
+  "repository_owner": "astral-experiments",
   "repository_name": "serc",
   "workflow_filename": "release.yml",
   "environment": "release",
