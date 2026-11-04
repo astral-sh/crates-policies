@@ -17,10 +17,20 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  release-gate:
+    # The deployment protection rule requires this job name.
+    name: release-gate
+    runs-on: ubuntu-latest
+    environment: release-gate
+    permissions: {}
+    steps:
+      - run: echo "Apply approved"
+
   apply:
     name: Apply
+    needs: [release-gate]
     runs-on: ubuntu-latest
-    environment: production
+    environment: release
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
